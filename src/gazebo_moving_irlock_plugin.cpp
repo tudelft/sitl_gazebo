@@ -31,6 +31,7 @@
 #include <ignition/math.hh>
 
 #include "opencv2/highgui.hpp"
+#include <opencv2/features2d.hpp>
 
 using namespace cv;
 using namespace std;
@@ -98,52 +99,57 @@ void MovingIRLockPlugin::OnNewFrame(const unsigned char *image,
     cv::Mat frame = cv::Mat(height, width, CV_8UC3);
     frame.data = (uchar *)image;
 
+    cv::Mat threshf;
+    cv::inRange(frame,cv::Scalar(0, 200, 0), cv::Scalar(180, 255, 180),threshf);
+    cv::SimpleBlobDetector::Params params;
+    // Change thresholds
+    params.minThreshold = 10;
+    params.maxThreshold = 100;
+
+    // Filter by Area.
+    params.filterByArea = 1;
+    params.minArea = 1;
+    params.maxArea = 100000;
+    params.filterByCircularity = false;
+    params.filterByColor = false;
+    params.filterByConvexity = false;
+    params.filterByInertia = false;
+
+    cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
+    std::vector<KeyPoint> keypoints;
+    detector->detect( threshf, keypoints);
+
     static int cnt = 0;
     if (!(cnt++ % 50)) {
-        printf("shizzle: %s, %d...  %d x  %d\n", format.c_str(), depth,width,height);
-        cv::imwrite("testlalala.png",frame);
+//        printf("shizzle: %s, %d...  %d x  %d\n", format.c_str(), depth,width,height);
+//        cv::imwrite("testlalala.png",frame);
+//        cv::imwrite("testlalala2.png",threshf);
+    }
+
+    if (keypoints.size() > 0) {
+        KeyPoint k = keypoints.at(0);
+        float x = (k.pt.x - IRLOCK_CENTER_X) * IRLOCK_TAN_ANG_PER_PIXEL_X;
+        float y = (k.pt.y - IRLOCK_CENTER_Y) * IRLOCK_TAN_ANG_PER_PIXEL_Y;
+        if (!(cnt++ % 50)) {
+            printf("Angle coordinates beacon: %f, %f\n",x,y);
+        }
+
+
+
+        // prepare irlock message
+        irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
+        irlock_message.set_signature(0); // unused by beacon estimator
+        irlock_message.set_pos_x(x);
+        irlock_message.set_pos_y(y);
+        irlock_message.set_size_x(0); // unused by beacon estimator
+        irlock_message.set_size_y(0); // unused by beacon estimator
+
+        irlock_pub_->Publish(irlock_message);
+    } else{
+        //printf("nothing\n");
     }
 
 
-
-//  gazebo::msgs::CameraImage img = this->camera->Image();
-
-//  for (int idx = 0; idx < img.model_size(); idx++) {
-
-//    gazebo::msgs::LogicalCameraImage_Model model = img.model(idx);
-
-//    if (model.has_name())
-//        printf("Model name: %s\n",model.name().c_str());
-
-//    if (model.has_name() && model.name() == "irlock_beacon") {
-
-//      if (model.has_pose()) {
-
-//        // position of the beacon in camera frame
-//        ignition::math::Vector3d pos;
-//        pos.X() = model.pose().position().x();
-//        pos.Y() = model.pose().position().y();
-//        pos.Z() = model.pose().position().z();
-
-//        // the default orientation of the IRLock sensor reports beacon in front of vehicle as -y values, beacon right of vehicle as x values
-//        // rotate the measurement accordingly
-//        ignition::math::Vector3d meas(-pos.Y()/pos.X(), -pos.Z()/pos.X(), 1.0);
-//        printf("Gazebo beacon: %f, %f, %f\n",meas.X(),meas.Y(),meas.Z());
-
-//        // prepare irlock message
-//        irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
-//        irlock_message.set_signature(idx); // unused by beacon estimator
-//        irlock_message.set_pos_x(meas.X());
-//        irlock_message.set_pos_y(meas.Y());
-//        irlock_message.set_size_x(0); // unused by beacon estimator
-//        irlock_message.set_size_y(0); // unused by beacon estimator
-
-//        // send message
-//        irlock_pub_->Publish(irlock_message);
-
-//      }
-//    }
-//  }
 
 }
 

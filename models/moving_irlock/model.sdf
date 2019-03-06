@@ -32,8 +32,8 @@
           <aspect_ratio>1.71</aspect_ratio>
  
           <image>
-            <width>848</width>
-            <height>480</height>
+            <width>320</width>
+            <height>200</height>
           </image>
           <clip>
             <near>0.1</near>
