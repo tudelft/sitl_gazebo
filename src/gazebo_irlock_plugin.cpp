@@ -88,6 +88,9 @@ void IRLockPlugin::OnUpdated()
 
     gazebo::msgs::LogicalCameraImage_Model model = img.model(idx);
 
+    if (model.has_name())
+        printf("Model name: %s\n",model.name().c_str());
+
     if (model.has_name() && model.name() == "irlock_beacon") {
 
       if (model.has_pose()) {
@@ -101,6 +104,7 @@ void IRLockPlugin::OnUpdated()
         // the default orientation of the IRLock sensor reports beacon in front of vehicle as -y values, beacon right of vehicle as x values
         // rotate the measurement accordingly
         ignition::math::Vector3d meas(-pos.Y()/pos.X(), -pos.Z()/pos.X(), 1.0);
+        printf("Gazebo beacon: %f, %f, %f\n",meas.X(),meas.Y(),meas.Z());
 
         // prepare irlock message
         irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
