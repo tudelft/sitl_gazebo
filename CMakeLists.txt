@@ -274,6 +274,7 @@ link_libraries(mav_msgs nav_msgs std_msgs sensor_msgs)
 add_library(gazebo_geotagged_images_plugin SHARED src/gazebo_geotagged_images_plugin.cpp)
 add_library(gazebo_gps_plugin SHARED src/gazebo_gps_plugin.cpp)
 add_library(gazebo_irlock_plugin SHARED src/gazebo_irlock_plugin.cpp)
+add_library(gazebo_moving_irlock_plugin SHARED src/gazebo_moving_irlock_plugin.cpp)
 add_library(gazebo_moving_beacon_plugin SHARED src/gazebo_moving_beacon_plugin.cpp)
 add_library(gazebo_lidar_plugin SHARED src/gazebo_lidar_plugin.cpp)
 add_library(gazebo_opticalflow_plugin SHARED src/gazebo_opticalflow_plugin.cpp)
@@ -292,6 +293,7 @@ set(plugins
   gazebo_geotagged_images_plugin
   gazebo_gps_plugin
   gazebo_irlock_plugin
+  gazebo_moving_irlock_plugin
   gazebo_moving_beacon_plugin
   gazebo_lidar_plugin
   gazebo_opticalflow_plugin

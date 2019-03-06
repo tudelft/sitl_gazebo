@@ -22,7 +22,7 @@
     </joint>
 
     <include>
-      <uri>model://irlock</uri>
+      <uri>model://moving_irlock</uri>
       <pose>-0 0 0 0 1.5708 0</pose>
     </include>
     <joint name="irlock_joint" type="revolute">

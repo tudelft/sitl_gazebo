@@ -83,7 +83,6 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 
     pose.Pos().Z(5);
 
-this->actor->SetStatic(false);
     this->actor->SetWorldPose(pose, true, true);
 
 }
