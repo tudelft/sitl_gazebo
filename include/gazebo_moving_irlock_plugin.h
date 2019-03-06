@@ -4,13 +4,16 @@
 #include <string>
 
 #include "gazebo/common/Plugin.hh"
-#include "gazebo/sensors/LogicalCameraSensor.hh"
 #include "gazebo/gazebo.hh"
 #include "gazebo/common/common.hh"
 #include "gazebo/util/system.hh"
 #include "gazebo/transport/transport.hh"
 #include "gazebo/msgs/msgs.hh"
 #include "gazebo/physics/physics.hh"
+
+#include "gazebo/sensors/CameraSensor.hh"
+#include "gazebo/rendering/Camera.hh"
+
 
 #include "IRLock.pb.h"
 
@@ -20,19 +23,25 @@ using namespace std;
 
 namespace gazebo
 {
-  class GAZEBO_VISIBLE IRLockPlugin : public SensorPlugin
+  class GAZEBO_VISIBLE MovingIRLockPlugin : public SensorPlugin
   {
     public:
-      IRLockPlugin();
-      virtual ~IRLockPlugin();
+      MovingIRLockPlugin();
+      virtual ~MovingIRLockPlugin();
       virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf);
-      virtual void OnUpdated();
+      virtual void OnNewFrame(const unsigned char *image,
+                              unsigned int width, unsigned int height,
+                              unsigned int depth, const std::string &format);
 
     protected:
-      sensors::LogicalCameraSensorPtr camera;
+      sensors::CameraSensorPtr camera;
+      rendering::CameraPtr rcamera;
+      unsigned int width, height, depth;
+      float rate;
+      std::string format;
 
     private:
-      event::ConnectionPtr updateConnection;
+      event::ConnectionPtr newFrameConnection;
       transport::PublisherPtr irlock_pub_;
       transport::NodePtr node_handle_;
       sensor_msgs::msgs::IRLock irlock_message;

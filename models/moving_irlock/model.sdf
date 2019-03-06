@@ -22,17 +22,29 @@
         </geometry>
       </visual>
 
-      <sensor name="Moving_IRLock" type="logical_camera">
+      <sensor name="Moving_IRLock" type="camera">
         <always_on>true</always_on>
         <update_rate>50.0</update_rate> <!-- according to IRLock spec -->
         <visualize>true</visualize>
-        <topic>/irlock</topic>
-        <logical_camera>
+        <topic>/moving_irlock</topic>
+        <camera>
           <horizontal_fov>0.611</horizontal_fov> <!-- 35 deg -->
-          <near>0.1</near>
-          <far>15</far> <!-- detection range according to IRLock spec -->
           <aspect_ratio>1.71</aspect_ratio>
-        </logical_camera>
+ 
+          <image>
+            <width>848</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>30</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.0001</stddev>
+          </noise>
+        </camera>
         <plugin name="moving_irlock_plugin" filename="libgazebo_moving_irlock_plugin.so">
             <robotNamespace></robotNamespace>
         </plugin>

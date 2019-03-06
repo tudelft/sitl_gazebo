@@ -79,10 +79,6 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 
     ignition::math::Pose3d pose = this->actor->WorldPose();
 
-//printf("Bla: %f, %f, %f\n",pose.Pos().X(),pose.Pos().Y(),pose.Pos().Z());
-
-    pose.Pos().Z(5);
-
     this->actor->SetWorldPose(pose, true, true);
 
 }
