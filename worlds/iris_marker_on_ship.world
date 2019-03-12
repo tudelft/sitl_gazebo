@@ -51,39 +51,87 @@
           <trajectory id="0" type="square">
              <waypoint>
                 <time>0.0</time>
-                <pose>0 -10 0.07 0 0 0</pose>
+                <pose>0 -100 0.07 0 0 0</pose>
              </waypoint>
              <waypoint>
                 <time>10.0</time>
-                <pose>0.5 -8 1 0 0.15 0</pose>
+                <pose>-0.5 -90 0.5 0 -0.05 0</pose>
              </waypoint>
              <waypoint>
                 <time>20.0</time>
-                <pose>-0.5 -6 0.07 0 -0.15 0</pose>
+                <pose>0 -80 1 0 -0.1 0</pose>
              </waypoint>
              <waypoint>
                 <time>30.0</time>
-                <pose>0.5 -4 1 0 0.15 0</pose>
-             </waypoint>
-             <waypoint>
-                <time>40.0</time>
-                <pose>-0.5 -2 0.07 0 -0.15 0</pose>
+                <pose>0.5 -70 0.5 0 -0.05 0</pose>
              </waypoint>                                       
              <waypoint>
-                <time>50.0</time>
-                <pose>0 0 0.5 0 0 0</pose>
-             </waypoint>
-             <waypoint>
-                <time>60.0</time>
-                <pose>0.5 2 0.07 0 0.15 0</pose>
+                <time>40.0</time>
+                <pose>0 -60 0.07 0 0 0</pose>
              </waypoint>   
              <waypoint>
-                <time>80.0</time>
-                <pose>-0.5 2 1.0 0 -0.15 0</pose>
+                <time>50.0</time>
+                <pose>-0.5 -50 0.5 0 0.05 0</pose>
              </waypoint>                         
               <waypoint>
+                <time>60.0</time>
+                <pose>0 -40 1 0 0.1 0</pose>
+             </waypoint>
+              <waypoint>
+                <time>70.0</time>
+                <pose>0.5 -30 0.5 0 0.05 0</pose>
+             </waypoint>
+              <waypoint>
+                <time>80.0</time>
+                <pose>0 -20 0.07 0 0 0</pose>
+             </waypoint>
+              <waypoint>
+                <time>90.0</time>
+                <pose>-0.5 -10 0.5 0 -0.05 0</pose>
+             </waypoint>
+              <waypoint>
                 <time>100.0</time>
-                <pose>0 -10 0.07 0 0 0</pose>
+                <pose>0 0 1 0 -0.1 0</pose>
+             </waypoint>                                                    
+              <waypoint>
+                <time>110.0</time>
+                <pose>0.5 10 0.5 0 -0.05 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>120.0</time>
+                <pose>0 20 0.07 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>130.0</time>
+                <pose>-0.5 30 0.5 0 0.05 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>140.0</time>
+                <pose>0 40 1 0 0.1 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>150.0</time>
+                <pose>0.5 50 0.5 0 0.05 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>160.0</time>
+                <pose>0 60 0.07 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>170.0</time>
+                <pose>-0.5 70 0.5 0 -0.05 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>180.0</time>
+                <pose>0 80 1 0 -0.1 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>190.0</time>
+                <pose>0.5 90 0.5 0 -0.05 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>200.0</time>
+                <pose>0 100 0 0 0 0</pose>
              </waypoint>
           </trajectory>
         </script>
