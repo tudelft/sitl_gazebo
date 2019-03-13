@@ -19,7 +19,10 @@
 
 #include <iostream>
 
-
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui.hpp"
+#include <opencv2/features2d.hpp>
+#include "opencv2/aruco.hpp"
 
 #define IRLOCK_RES_X 320
 #define IRLOCK_RES_Y 200
@@ -63,6 +66,8 @@ namespace gazebo
       transport::NodePtr node_handle_;
       sensor_msgs::msgs::IRLock irlock_message;
       std::string namespace_;
+
+      cv::Ptr<cv::aruco::Dictionary> dictionary;
 
   };
 }

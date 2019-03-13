@@ -30,13 +30,19 @@
 #include <boost/algorithm/string.hpp>
 #include <ignition/math.hh>
 
+#include "opencv2/opencv.hpp"
+#include "opencv2/core.hpp"
+#include "opencv2/aruco.hpp"
 #include "opencv2/highgui.hpp"
 #include <opencv2/features2d.hpp>
+#include "opencv2/opencv.hpp"
+#include "opencv2/imgproc.hpp"
 
-using namespace cv;
+
+
 using namespace std;
-
 using namespace gazebo;
+
 GZ_REGISTER_SENSOR_PLUGIN(MovingIRLockPlugin)
 
 MovingIRLockPlugin::MovingIRLockPlugin() : SensorPlugin()
@@ -87,6 +93,8 @@ void MovingIRLockPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
 
   this->newFrameConnection = this->rcamera->ConnectNewImageFrame(
       boost::bind(&MovingIRLockPlugin::OnNewFrame, this, _1, this->width, this->height, this->depth, this->format));
+
+  dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
 
 void MovingIRLockPlugin::OnNewFrame(const unsigned char *image,
@@ -94,47 +102,59 @@ void MovingIRLockPlugin::OnNewFrame(const unsigned char *image,
                               unsigned int depth, const std::string &format)
 {
 
-
+    static int cnt = 0;
+    cnt++;
 
     cv::Mat frame = cv::Mat(height, width, CV_8UC3);
     frame.data = (uchar *)image;
 
-    cv::Mat threshf;
-    cv::inRange(frame,cv::Scalar(0, 200, 0), cv::Scalar(180, 255, 180),threshf);
-    cv::SimpleBlobDetector::Params params;
-    // Change thresholds
-    params.minThreshold = 10;
-    params.maxThreshold = 100;
 
-    // Filter by Area.
-    params.filterByArea = 1;
-    params.minArea = 1;
-    params.maxArea = 100000;
-    params.filterByCircularity = false;
-    params.filterByColor = false;
-    params.filterByConvexity = false;
-    params.filterByInertia = false;
+    std::vector<int> ids;
+    std::vector<std::vector<cv::Point2f>> corners;
 
-    cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
-    std::vector<KeyPoint> keypoints;
-    detector->detect( threshf, keypoints);
+    cv::Ptr<cv::aruco::DetectorParameters> params = cv::aruco::DetectorParameters::create();
 
-    static int cnt = 0;
-    if (!(cnt++ % 50)) {
-//        printf("shizzle: %s, %d...  %d x  %d\n", format.c_str(), depth,width,height);
-//        cv::imwrite("testlalala.png",frame);
-//        cv::imwrite("testlalala2.png",threshf);
+    cv::aruco::detectMarkers(frame, dictionary, corners, ids, params);
+
+    int marker_10_id = -1 ;
+    int marker_17_id = -1;
+
+    for (uint i = 0; i < ids.size(); i++)
+    {
+        printf("%d, ",ids.at(i));
+        if (ids.at(i) == 0)
+        {
+            marker_17_id = i;
+        }
+        if (ids.at(i) == 1)
+        {
+            marker_10_id = i;
+        }
     }
+    if(ids.size()>0)
+        printf("\n");
 
-    if (keypoints.size() > 0) {
-        KeyPoint k = keypoints.at(0);
-        float x = (k.pt.x - IRLOCK_CENTER_X) * IRLOCK_TAN_ANG_PER_PIXEL_X;
-        float y = (k.pt.y - IRLOCK_CENTER_Y) * IRLOCK_TAN_ANG_PER_PIXEL_Y;
-        if (!(cnt++ % 50)) {
+    if (marker_17_id >= 0 || marker_10_id >= 0)
+    {
+        int marker_id = marker_10_id; // prefer the marker in the red area, as that is probably better visible
+        if (marker_id <0)
+            marker_id = marker_17_id;
+        cv::Point2f p = {0};
+        for (uint i = 0; i < corners.at(marker_id).size(); i++)
+        {
+            p += corners.at(marker_id).at(i);
+        }
+        p.x /= static_cast<float>(corners.at(marker_id).size());
+        p.y /= static_cast<float>(corners.at(marker_id).size());
+
+
+        //marker_angle = transformPixelToTanAngle_rgb(p*resizef);
+
+        float x = (p.x - IRLOCK_CENTER_X) * IRLOCK_TAN_ANG_PER_PIXEL_X;
+        float y = (p.y - IRLOCK_CENTER_Y) * IRLOCK_TAN_ANG_PER_PIXEL_Y;
+        if (!(cnt % 50)) {
             printf("Angle coordinates beacon: %f, %f\n",x,y);
         }
-
-
 
         // prepare irlock message
         irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
@@ -145,12 +165,11 @@ void MovingIRLockPlugin::OnNewFrame(const unsigned char *image,
         irlock_message.set_size_y(0); // unused by beacon estimator
 
         irlock_pub_->Publish(irlock_message);
-    } else{
-        //printf("nothing\n");
+
     }
-
-
-
+    if (!(cnt % 50)) {
+        cv::imwrite("testlalala.png",frame);
+    }
 }
 
 /* vim: set et fenc=utf-8 ff=unix sts=0 sw=2 ts=2 : */
