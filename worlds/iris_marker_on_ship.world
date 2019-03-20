@@ -13,7 +13,7 @@
       <uri>model://water_plane</uri>
     </include>
     <include>
-      <uri>model://iris_moving_irlock</uri>
+      <uri>model://iris_marker_on_ship</uri>
       <pose>0 0 0.3 0 0 1.5708</pose>
     </include>
 
@@ -39,7 +39,7 @@
       <magnetic_field>6.0e-6 2.3e-5 -4.2e-5</magnetic_field>
     </physics>
 
-    <actor name="irlock_beacon">
+    <actor name="marker">
       <include>
         <name>navy</name>
         <uri>model://navy</uri>

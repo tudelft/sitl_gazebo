@@ -1,5 +1,5 @@
-#ifndef _GAZEBO_IRLOCK_PLUGIN_HH_
-#define _GAZEBO_IRLOCK_PLUGIN_HH_
+#ifndef _GAZEBO_MARKER_ON_SHIP_PLUGIN_HH_
+#define _GAZEBO_MARKER_ON_SHIP_PLUGIN_HH_
 
 #include <string>
 
@@ -43,11 +43,11 @@ using namespace std;
 
 namespace gazebo
 {
-  class GAZEBO_VISIBLE MovingIRLockPlugin : public SensorPlugin
+  class GAZEBO_VISIBLE MarkerOnShipPlugin : public SensorPlugin
   {
     public:
-      MovingIRLockPlugin();
-      virtual ~MovingIRLockPlugin();
+      MarkerOnShipPlugin();
+      virtual ~MarkerOnShipPlugin();
       virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf);
       virtual void OnNewFrame(const unsigned char *image,
                               unsigned int width, unsigned int height,

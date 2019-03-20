@@ -21,7 +21,7 @@
 #endif
 
 #include "gazebo/sensors/DepthCameraSensor.hh"
-#include "gazebo_moving_irlock_plugin.h"
+#include "gazebo_marker_on_ship_plugin.h"
 
 #include <highgui.h>
 #include <math.h>
@@ -43,19 +43,19 @@
 using namespace std;
 using namespace gazebo;
 
-GZ_REGISTER_SENSOR_PLUGIN(MovingIRLockPlugin)
+GZ_REGISTER_SENSOR_PLUGIN(MarkerOnShipPlugin)
 
-MovingIRLockPlugin::MovingIRLockPlugin() : SensorPlugin()
+MarkerOnShipPlugin::MarkerOnShipPlugin() : SensorPlugin()
 {
 
 }
 
-MovingIRLockPlugin::~MovingIRLockPlugin()
+MarkerOnShipPlugin::~MarkerOnShipPlugin()
 {
   this->camera.reset();
 }
 
-void MovingIRLockPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
+void MarkerOnShipPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
 {
   if (!_sensor)
     gzerr << "Invalid sensor pointer.\n";
@@ -63,7 +63,7 @@ void MovingIRLockPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
   this->camera = std::dynamic_pointer_cast<sensors::CameraSensor>(_sensor);
 
   if (!this->camera) {
-    gzerr << "MovingIRLockPlugin requires a CameraSensor.\n";
+    gzerr << "MarkerOnShipPlugin requires a CameraSensor.\n";
   }
 
   if (_sdf->HasElement("robotNamespace")) {
@@ -92,12 +92,12 @@ void MovingIRLockPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
   this->rate = this->rcamera->RenderRate();
 
   this->newFrameConnection = this->rcamera->ConnectNewImageFrame(
-      boost::bind(&MovingIRLockPlugin::OnNewFrame, this, _1, this->width, this->height, this->depth, this->format));
+      boost::bind(&MarkerOnShipPlugin::OnNewFrame, this, _1, this->width, this->height, this->depth, this->format));
 
   dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
 
-void MovingIRLockPlugin::OnNewFrame(const unsigned char *image,
+void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
                               unsigned int width, unsigned int height,
                               unsigned int depth, const std::string &format)
 {
@@ -167,7 +167,7 @@ void MovingIRLockPlugin::OnNewFrame(const unsigned char *image,
         irlock_pub_->Publish(irlock_message);
 
     }
-    if (!(cnt % 50)) {
+    if (!(cnt % 10)) {
         cv::imwrite("testlalala.png",frame);
     }
 }
