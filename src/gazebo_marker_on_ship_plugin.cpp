@@ -116,23 +116,23 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     cv::aruco::detectMarkers(frame, dictionary, corners, ids, params);
 
-    int marker_10_id = -1 ;
+    int marker_10_id = -1;
     int marker_17_id = -1;
 
     for (uint i = 0; i < ids.size(); i++)
     {
-        printf("%d, ",ids.at(i));
+//        printf("%d, ",ids.at(i));
         if (ids.at(i) == 0)
         {
             marker_17_id = i;
         }
-        if (ids.at(i) == 1)
+        if (ids.at(i) == 3)
         {
             marker_10_id = i;
         }
     }
-    if(ids.size()>0)
-        printf("\n");
+//    if(ids.size()>0)
+//        printf("\n");
 
     if (marker_17_id >= 0 || marker_10_id >= 0)
     {
@@ -155,6 +155,8 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         if (!(cnt % 50)) {
             printf("Angle coordinates beacon: %f, %f\n",x,y);
         }
+
+        printf("%f, %f\n",static_cast<float>(x),static_cast<float>(y));
 
         // prepare irlock message
         irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
