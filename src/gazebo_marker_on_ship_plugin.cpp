@@ -97,6 +97,21 @@ void MarkerOnShipPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
   dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
 
+cv::Point2f getCenterOfMarker(std::vector<std::vector<cv::Point2f>> corners){
+    cv::Point2f p = {0};
+    int cnt = 0;
+    for (uint j = 0; j < corners.size(); j++) {
+        std::vector<cv::Point2f> c = corners.at(j);
+        cnt+=c.size();
+        for (uint i = 0; i < c.size(); i++) {
+            p += c.at(i);
+        }
+    }
+    p.x /= static_cast<float>(cnt);
+    p.y /= static_cast<float>(cnt);
+    return p;
+}
+
 void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
                               unsigned int width, unsigned int height,
                               unsigned int depth, const std::string &format)
@@ -105,9 +120,18 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
     static int cnt = 0;
     cnt++;
 
-    cv::Mat frame = cv::Mat(height, width, CV_8UC3);
-    frame.data = (uchar *)image;
+    cv::Mat tframe = cv::Mat(height, width, CV_8UC3);
+    tframe.data = (uchar *)image;
 
+    // data is rgb, we need bgr. Convert it:
+    cv::Mat rgb[3];
+    cv::split(tframe,rgb);
+    cv::Mat bgr[3];
+    bgr[0] = rgb[2];
+    bgr[1] = rgb[1];
+    bgr[2] = rgb[0];
+    cv::Mat frame;
+    cv::merge(bgr, 3, frame);
 
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners;
@@ -116,38 +140,58 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     cv::aruco::detectMarkers(frame, dictionary, corners, ids, params);
 
-    int marker_10_id = -1;
-    int marker_17_id = -1;
-
+    int markers[20] = {-1};
     for (uint i = 0; i < ids.size(); i++)
     {
-//        printf("%d, ",ids.at(i));
-        if (ids.at(i) == 0)
-        {
-            marker_17_id = i;
-        }
-        if (ids.at(i) == 3)
-        {
-            marker_10_id = i;
-        }
+        if (ids.at(i) >= 0 && ids.at(i) < 20)
+            markers[ids.at(i)] = i;
     }
-//    if(ids.size()>0)
-//        printf("\n");
 
-    if (marker_17_id >= 0 || marker_10_id >= 0)
+//            std::cout  << getCenterOfMarker({corners.at(markers[10]),corners.at(markers[18])}) << std::endl;
+//            std::cout  << getCenterOfMarker({corners.at(markers[12]),corners.at(markers[16])}) << std::endl;
+//            std::cout  << getCenterOfMarker({corners.at(markers[11]),corners.at(markers[17])}) << std::endl;
+//            std::cout  << getCenterOfMarker({corners.at(markers[13]),corners.at(markers[15])}) << std::endl;
+//            std::cout  << getCenterOfMarker({corners.at(markers[1]),corners.at(markers[3])}) << std::endl;
+//            std::cout  << getCenterOfMarker({corners.at(markers[0]),corners.at(markers[4])}) << std::endl;
+
+//            std::cout  << getCenterOfMarker({corners.at(markers[14])}) << std::endl;
+
+    cv::Point2f p = {0};
+    bool found = false;
+    if (markers[14] >0) {
+        p = getCenterOfMarker({corners.at(markers[14])});
+//                std::cout  << p << std::endl;
+        found = true;
+    } else if (markers[10] >0 && markers[18]){
+        p = getCenterOfMarker({corners.at(markers[10]),corners.at(markers[18])});
+//                std::cout  << p << std::endl;
+        found = true;
+    } else if (markers[12] >0 && markers[16]){
+        p = getCenterOfMarker({corners.at(markers[12]),corners.at(markers[16])});
+//                std::cout  << p << std::endl;
+        found = true;
+    } else if (markers[11] >0 && markers[17]){
+        p = getCenterOfMarker({corners.at(markers[11]),corners.at(markers[17])});
+//                std::cout  << p << std::endl;
+        found = true;
+    } else if (markers[13] >0 && markers[15]){
+        p = getCenterOfMarker({corners.at(markers[13]),corners.at(markers[15])});
+//                std::cout  << p << std::endl;
+        found = true;
+    } else if (markers[1] >0 && markers[3]){
+        p = getCenterOfMarker({corners.at(markers[1]),corners.at(markers[3])});
+//                std::cout  << p << std::endl;
+        found = true;
+    } else if (markers[0] >0 && markers[4]){
+        p = getCenterOfMarker({corners.at(markers[0]),corners.at(markers[4])});
+//                std::cout  << p << std::endl;
+        found = true;
+    }
+
+
+
+    if (found)
     {
-        int marker_id = marker_10_id; // prefer the marker in the red area, as that is probably better visible
-        if (marker_id <0)
-            marker_id = marker_17_id;
-        cv::Point2f p = {0};
-        for (uint i = 0; i < corners.at(marker_id).size(); i++)
-        {
-            p += corners.at(marker_id).at(i);
-        }
-        p.x /= static_cast<float>(corners.at(marker_id).size());
-        p.y /= static_cast<float>(corners.at(marker_id).size());
-
-
         //marker_angle = transformPixelToTanAngle_rgb(p*resizef);
 
         float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
