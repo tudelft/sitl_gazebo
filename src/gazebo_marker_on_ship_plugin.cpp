@@ -150,8 +150,8 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
         //marker_angle = transformPixelToTanAngle_rgb(p*resizef);
 
-        float x = (p.x - IRLOCK_CENTER_X) * IRLOCK_TAN_ANG_PER_PIXEL_X;
-        float y = (p.y - IRLOCK_CENTER_Y) * IRLOCK_TAN_ANG_PER_PIXEL_Y;
+        float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
+        float y = (p.y - CAM_CENTER_Y) * CAM_TAN_ANG_PER_PIXEL_Y;
         if (!(cnt % 50)) {
             printf("Angle coordinates beacon: %f, %f\n",x,y);
         }
