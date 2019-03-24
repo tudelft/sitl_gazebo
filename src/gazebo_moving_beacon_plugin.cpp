@@ -42,7 +42,7 @@ MovingBeaconPlugin::MovingBeaconPlugin()
 
 MovingBeaconPlugin::~MovingBeaconPlugin()
 {
-  this->actor.reset();
+  this->model.reset();
 }
 
 void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
@@ -50,9 +50,9 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
   if (!_model)
     gzerr << "Invalid model pointer.\n";
 
-  this->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
+  this->model = boost::dynamic_pointer_cast<physics::Model>(_model);
 
-  if (!this->actor) {
+  if (!this->model) {
     gzerr << "MovingBeaconPlugin requires a MovingBeacon.\n";
   }
 
@@ -66,7 +66,7 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
   node_handle_->Init(namespace_);
 
 
-  this->updateConnection_actor = (event::Events::ConnectWorldUpdateBegin(
+  this->updateConnection_model = (event::Events::ConnectWorldUpdateBegin(
       std::bind(&MovingBeaconPlugin::OnUpdated, this, std::placeholders::_1)));
 
 
@@ -74,12 +74,18 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
 
 void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 {
+    static double time = 0;
+    time += 0.02;
 
-//    printf("Actor name: %s\n",this->actor->GetName().c_str());
+    double t1 = time/1800. + 5.7;
+    double t2 = time/30.;
 
-    ignition::math::Pose3d pose = this->actor->WorldPose();
+    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
+//    ignition::math::Pose3d pose(20,30,3.,0,0,0);
 
-    this->actor->SetWorldPose(pose, true, true);
+//    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
+
+    this->model->SetWorldPose(pose, true, true);
 
 }
 

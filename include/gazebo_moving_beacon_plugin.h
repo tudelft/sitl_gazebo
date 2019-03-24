@@ -29,12 +29,12 @@ namespace gazebo
       virtual void Reset();
 
     protected:
-      physics::ActorPtr actor;
+      physics::ModelPtr model;
 
 
     private:
       event::ConnectionPtr updateConnection;
-      event::ConnectionPtr updateConnection_actor;
+      event::ConnectionPtr updateConnection_model;
       transport::PublisherPtr irlock_pub_;
       transport::NodePtr node_handle_;
 
