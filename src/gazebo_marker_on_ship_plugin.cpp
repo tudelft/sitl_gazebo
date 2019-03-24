@@ -196,11 +196,11 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
         float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
         float y = (p.y - CAM_CENTER_Y) * CAM_TAN_ANG_PER_PIXEL_Y;
-        if (!(cnt % 50)) {
-            printf("Angle coordinates beacon: %f, %f\n",x,y);
-        }
+//        if (!(cnt % 50)) {
+//            printf("Angle coordinates beacon: %f, %f\n",x,y);
+//        }
 
-        printf("%f, %f\n",static_cast<float>(x),static_cast<float>(y));
+//        printf("%f, %f\n",static_cast<float>(x),static_cast<float>(y));
 
         // prepare irlock message
         irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
