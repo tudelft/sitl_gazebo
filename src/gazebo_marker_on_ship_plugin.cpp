@@ -214,7 +214,9 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     }
     if (!(cnt % 10)) {
-        cv::imwrite("testlalala.png",frame);
+      cv::Mat fs;
+      cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
+      cv::imwrite("testlalala.png",fs);
     }
 }
 
