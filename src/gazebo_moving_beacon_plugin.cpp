@@ -75,12 +75,14 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
 void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 {
     static double time = 0;
-    time += 0.02;
+    time += 0.002;
 
-    double t1 = time/1800. + 5.7;
-    double t2 = time/30.;
+    double t1 = time/60. + 5.;
+    double t2 = time/3.;
+    double t3 = std::fmod(time*2.,400)-100;
 
-    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
+    ignition::math::Pose3d pose(t3,0,sinf(t2)*1.f+3,0,0,1.57);
+//    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
 //    ignition::math::Pose3d pose(20,30,3.,0,0,0);
 
 //    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
