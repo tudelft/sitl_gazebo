@@ -58,32 +58,32 @@ using namespace std;
 
 namespace gazebo
 {
-  class GAZEBO_VISIBLE MarkerOnShipPlugin : public SensorPlugin
-  {
-	public:
-	  MarkerOnShipPlugin();
-	  virtual ~MarkerOnShipPlugin();
-	  virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf);
-	  virtual void OnNewFrame(const unsigned char *image,
-							  unsigned int width, unsigned int height,
-							  unsigned int depth, const std::string &format);
+class GAZEBO_VISIBLE MarkerOnShipPlugin : public SensorPlugin
+{
+public:
+	MarkerOnShipPlugin();
+	virtual ~MarkerOnShipPlugin();
+	virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf);
+	virtual void OnNewFrame(const unsigned char *image,
+				unsigned int width, unsigned int height,
+				unsigned int depth, const std::string &format);
 
-	protected:
-	  sensors::CameraSensorPtr camera;
-	  rendering::CameraPtr rcamera;
-	  unsigned int width, height, depth;
-	  float rate;
-	  std::string format;
+protected:
+	sensors::CameraSensorPtr camera;
+	rendering::CameraPtr rcamera;
+	unsigned int width, height, depth;
+	float rate;
+	std::string format;
 
-	private:
-	  event::ConnectionPtr newFrameConnection;
-	  transport::PublisherPtr irlock_pub_;
-	  transport::NodePtr node_handle_;
-	  sensor_msgs::msgs::IRLock irlock_message;
-	  std::string namespace_;
+private:
+	event::ConnectionPtr newFrameConnection;
+	transport::PublisherPtr irlock_pub_;
+	transport::NodePtr node_handle_;
+	sensor_msgs::msgs::IRLock irlock_message;
+	std::string namespace_;
 
-	  cv::Ptr<cv::aruco::Dictionary> dictionary;
+	cv::Ptr<cv::aruco::Dictionary> dictionary;
 
-  };
+};
 }
 #endif

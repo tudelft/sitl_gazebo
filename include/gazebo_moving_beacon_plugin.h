@@ -19,28 +19,28 @@ using namespace std;
 
 namespace gazebo
 {
-  class GAZEBO_VISIBLE MovingBeaconPlugin : public ModelPlugin
-  {
-    public:
-      MovingBeaconPlugin();
-      virtual ~MovingBeaconPlugin();
-      virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
-      virtual void OnUpdated(const common::UpdateInfo &_info);
-      virtual void Reset();
+class GAZEBO_VISIBLE MovingBeaconPlugin : public ModelPlugin
+{
+public:
+	MovingBeaconPlugin();
+	virtual ~MovingBeaconPlugin();
+	virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
+	virtual void OnUpdated(const common::UpdateInfo &_info);
+	virtual void Reset();
 
-    protected:
-      physics::ModelPtr model;
-
-
-    private:
-      event::ConnectionPtr updateConnection;
-      event::ConnectionPtr updateConnection_model;
-      transport::PublisherPtr irlock_pub_;
-      transport::NodePtr node_handle_;
+protected:
+	physics::ModelPtr model;
 
 
-      std::string namespace_;
+private:
+	event::ConnectionPtr updateConnection;
+	event::ConnectionPtr updateConnection_model;
+	transport::PublisherPtr irlock_pub_;
+	transport::NodePtr node_handle_;
 
-  };
+
+	std::string namespace_;
+
+};
 }
 #endif

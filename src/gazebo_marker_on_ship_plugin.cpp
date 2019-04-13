@@ -15,8 +15,8 @@
  *
 */
 #ifdef _WIN32
-  // Ensure that Winsock2.h is included before Windows.h, which can get
-  // pulled in by anybody (e.g., Boost).
+// Ensure that Winsock2.h is included before Windows.h, which can get
+// pulled in by anybody (e.g., Boost).
 #include <Winsock2.h>
 #endif
 
@@ -52,49 +52,49 @@ MarkerOnShipPlugin::MarkerOnShipPlugin() : SensorPlugin()
 
 MarkerOnShipPlugin::~MarkerOnShipPlugin()
 {
-  this->camera.reset();
+    this->camera.reset();
 }
 
 void MarkerOnShipPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
 {
-  if (!_sensor)
-    gzerr << "Invalid sensor pointer.\n";
+    if (!_sensor)
+        gzerr << "Invalid sensor pointer.\n";
 
-  this->camera = std::dynamic_pointer_cast<sensors::CameraSensor>(_sensor);
+    this->camera = std::dynamic_pointer_cast<sensors::CameraSensor>(_sensor);
 
-  if (!this->camera) {
-    gzerr << "MarkerOnShipPlugin requires a CameraSensor.\n";
-  }
+    if (!this->camera) {
+        gzerr << "MarkerOnShipPlugin requires a CameraSensor.\n";
+    }
 
-  if (_sdf->HasElement("robotNamespace")) {
-    namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
-  } else {
-    gzwarn << "Please specify a robotNamespace.\n";
-  }
+    if (_sdf->HasElement("robotNamespace")) {
+        namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
+    } else {
+        gzwarn << "Please specify a robotNamespace.\n";
+    }
 
-  node_handle_ = transport::NodePtr(new transport::Node());
-  node_handle_->Init(namespace_);
+    node_handle_ = transport::NodePtr(new transport::Node());
+    node_handle_->Init(namespace_);
 
-  const string scopedName = _sensor->ParentName();
+    const string scopedName = _sensor->ParentName();
 
-  string topicName = "~/" + scopedName + "/irlock";
-  boost::replace_all(topicName, "::", "/");
+    string topicName = "~/" + scopedName + "/irlock";
+    boost::replace_all(topicName, "::", "/");
 
-  irlock_pub_ = node_handle_->Advertise<sensor_msgs::msgs::IRLock>(topicName, 10);
+    irlock_pub_ = node_handle_->Advertise<sensor_msgs::msgs::IRLock>(topicName, 10);
 
-  this->camera->SetActive(true);
-  this->rcamera = this->camera->Camera();
+    this->camera->SetActive(true);
+    this->rcamera = this->camera->Camera();
 
-  this->width = this->rcamera->ImageWidth();
-  this->height = this->rcamera->ImageHeight();
-  this->depth = this->rcamera->ImageDepth();
-  this->format = this->rcamera->ImageFormat();
-  this->rate = this->rcamera->RenderRate();
+    this->width = this->rcamera->ImageWidth();
+    this->height = this->rcamera->ImageHeight();
+    this->depth = this->rcamera->ImageDepth();
+    this->format = this->rcamera->ImageFormat();
+    this->rate = this->rcamera->RenderRate();
 
-  this->newFrameConnection = this->rcamera->ConnectNewImageFrame(
-      boost::bind(&MarkerOnShipPlugin::OnNewFrame, this, _1, this->width, this->height, this->depth, this->format));
+    this->newFrameConnection = this->rcamera->ConnectNewImageFrame(
+                boost::bind(&MarkerOnShipPlugin::OnNewFrame, this, _1, this->width, this->height, this->depth, this->format));
 
-  dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+    dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 }
 
 cv::Point2f getCenterOfMarker(std::vector<std::vector<cv::Point2f>> corners){
@@ -113,8 +113,8 @@ cv::Point2f getCenterOfMarker(std::vector<std::vector<cv::Point2f>> corners){
 }
 
 void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
-                              unsigned int width, unsigned int height,
-                              unsigned int depth, const std::string &format)
+                                    unsigned int width, unsigned int height,
+                                    unsigned int depth, const std::string &format)
 {
 
     static int cnt = 0;
@@ -147,44 +147,44 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
             markers[ids.at(i)] = i;
     }
 
-//            std::cout  << getCenterOfMarker({corners.at(markers[10]),corners.at(markers[18])}) << std::endl;
-//            std::cout  << getCenterOfMarker({corners.at(markers[12]),corners.at(markers[16])}) << std::endl;
-//            std::cout  << getCenterOfMarker({corners.at(markers[11]),corners.at(markers[17])}) << std::endl;
-//            std::cout  << getCenterOfMarker({corners.at(markers[13]),corners.at(markers[15])}) << std::endl;
-//            std::cout  << getCenterOfMarker({corners.at(markers[1]),corners.at(markers[3])}) << std::endl;
-//            std::cout  << getCenterOfMarker({corners.at(markers[0]),corners.at(markers[4])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[10]),corners.at(markers[18])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[12]),corners.at(markers[16])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[11]),corners.at(markers[17])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[13]),corners.at(markers[15])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[1]),corners.at(markers[3])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[0]),corners.at(markers[4])}) << std::endl;
 
-//            std::cout  << getCenterOfMarker({corners.at(markers[14])}) << std::endl;
+    //            std::cout  << getCenterOfMarker({corners.at(markers[14])}) << std::endl;
 
     cv::Point2f p = {0};
     bool found = false;
     if (markers[14] >0) {
         p = getCenterOfMarker({corners.at(markers[14])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     } else if (markers[10] >0 && markers[18]){
         p = getCenterOfMarker({corners.at(markers[10]),corners.at(markers[18])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     } else if (markers[12] >0 && markers[16]){
         p = getCenterOfMarker({corners.at(markers[12]),corners.at(markers[16])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     } else if (markers[11] >0 && markers[17]){
         p = getCenterOfMarker({corners.at(markers[11]),corners.at(markers[17])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     } else if (markers[13] >0 && markers[15]){
         p = getCenterOfMarker({corners.at(markers[13]),corners.at(markers[15])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     } else if (markers[1] >0 && markers[3]){
         p = getCenterOfMarker({corners.at(markers[1]),corners.at(markers[3])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     } else if (markers[0] >0 && markers[4]){
         p = getCenterOfMarker({corners.at(markers[0]),corners.at(markers[4])});
-//                std::cout  << p << std::endl;
+        //                std::cout  << p << std::endl;
         found = true;
     }
 
@@ -196,11 +196,11 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
         float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
         float y = (p.y - CAM_CENTER_Y) * CAM_TAN_ANG_PER_PIXEL_Y;
-//        if (!(cnt % 50)) {
-//            printf("Angle coordinates beacon: %f, %f\n",x,y);
-//        }
+        //        if (!(cnt % 50)) {
+        //            printf("Angle coordinates beacon: %f, %f\n",x,y);
+        //        }
 
-//        printf("%f, %f\n",static_cast<float>(x),static_cast<float>(y));
+        //        printf("%f, %f\n",static_cast<float>(x),static_cast<float>(y));
 
         // prepare irlock message
         irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
@@ -214,8 +214,8 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     }
     if (!(cnt % 10)) {
-      cv::Mat fs;
-      cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
+        cv::Mat fs;
+        cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
       cv::imwrite("testlalala.png",fs);
     }
 }

@@ -15,8 +15,8 @@
  *
 */
 #ifdef _WIN32
-  // Ensure that Winsock2.h is included before Windows.h, which can get
-  // pulled in by anybody (e.g., Boost).
+// Ensure that Winsock2.h is included before Windows.h, which can get
+// pulled in by anybody (e.g., Boost).
 #include <Winsock2.h>
 #endif
 
@@ -42,32 +42,32 @@ MovingBeaconPlugin::MovingBeaconPlugin()
 
 MovingBeaconPlugin::~MovingBeaconPlugin()
 {
-  this->model.reset();
+    this->model.reset();
 }
 
 void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
 {
-  if (!_model)
-    gzerr << "Invalid model pointer.\n";
+    if (!_model)
+        gzerr << "Invalid model pointer.\n";
 
-  this->model = boost::dynamic_pointer_cast<physics::Model>(_model);
+    this->model = boost::dynamic_pointer_cast<physics::Model>(_model);
 
-  if (!this->model) {
-    gzerr << "MovingBeaconPlugin requires a MovingBeacon.\n";
-  }
+    if (!this->model) {
+        gzerr << "MovingBeaconPlugin requires a MovingBeacon.\n";
+    }
 
-  if (_sdf->HasElement("robotNamespace")) {
-    namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
-  } else {
-    gzwarn << "Please specify a robotNamespace.\n";
-  }
+    if (_sdf->HasElement("robotNamespace")) {
+        namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
+    } else {
+        gzwarn << "Please specify a robotNamespace.\n";
+    }
 
-  node_handle_ = transport::NodePtr(new transport::Node());
-  node_handle_->Init(namespace_);
+    node_handle_ = transport::NodePtr(new transport::Node());
+    node_handle_->Init(namespace_);
 
 
-  this->updateConnection_model = (event::Events::ConnectWorldUpdateBegin(
-      std::bind(&MovingBeaconPlugin::OnUpdated, this, std::placeholders::_1)));
+    this->updateConnection_model = (event::Events::ConnectWorldUpdateBegin(
+                                        std::bind(&MovingBeaconPlugin::OnUpdated, this, std::placeholders::_1)));
 
 
 }
@@ -82,10 +82,10 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
     double t3 = std::fmod(time*2.,400)-100;
 
     ignition::math::Pose3d pose(t3,0,sinf(t2)*1.f+3,0,0,1.57);
-//    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
-//    ignition::math::Pose3d pose(20,30,3.,0,0,0);
+    //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
+    //    ignition::math::Pose3d pose(20,30,3.,0,0,0);
 
-//    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
+    //    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
 
     this->model->SetWorldPose(pose, true, true);
 
