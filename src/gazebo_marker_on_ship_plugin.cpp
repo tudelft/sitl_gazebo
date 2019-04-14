@@ -213,7 +213,7 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         irlock_pub_->Publish(irlock_message);
 
     }
-    if (!(cnt % 10)) {
+    if (!(cnt % 3)) {
         cv::Mat fs;
         cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
       cv::imwrite("testlalala.png",fs);

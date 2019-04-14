@@ -24,7 +24,7 @@
 
       <sensor name="Downward_Camera" type="camera">
         <always_on>true</always_on>
-        <update_rate>60.0</update_rate> 
+        <update_rate>15.0</update_rate> 
         <visualize>true</visualize>
         <topic>/downward_cam</topic>
         <camera>
