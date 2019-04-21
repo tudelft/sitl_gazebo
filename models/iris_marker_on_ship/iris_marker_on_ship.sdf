@@ -42,10 +42,10 @@
       <robotNamespace/>
       <xyzOffset>1 0 0</xyzOffset>
       <windDirection>0 1 0</windDirection>
-      <windForceMean>1.7</windForceMean>
+      <windForceMean>2</windForceMean>
       <windGustDirection>1 0 0</windGustDirection>
       <windGustDuration>0</windGustDuration>
-      <windGustStart>0</windGustStart>
+      <windGustStart>60</windGustStart>
       <windGustForceMean>0</windGustForceMean>
     </plugin>
   </model>
