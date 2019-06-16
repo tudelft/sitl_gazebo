@@ -133,6 +133,14 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
     cv::Mat frame;
     cv::merge(bgr, 3, frame);
 
+    static int blind = 0;
+
+//    if (blind<20)
+//        frame = cv::Mat::zeros(frame.cols,frame.rows,CV_8UC3);
+//    blind++;
+//    if (blind>30)
+//        blind = 0;
+
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners;
 
@@ -192,6 +200,7 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     if (found)
     {
+//        std::cout  << p << std::endl;
         //marker_angle = transformPixelToTanAngle_rgb(p*resizef);
 
         float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
@@ -213,10 +222,11 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         irlock_pub_->Publish(irlock_message);
 
     }
+//        std::cout  << "-" << std::endl;
     if (!(cnt % 3)) {
         cv::Mat fs;
         cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
-      cv::imwrite("testlalala.png",fs);
+        cv::imwrite("testlalala.png",fs);
     }
 }
 

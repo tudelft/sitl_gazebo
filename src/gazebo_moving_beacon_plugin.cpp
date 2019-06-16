@@ -79,7 +79,7 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 
     double t1 = time/60. + 5.;
     double t2 = time/3.;
-    double t3 = std::fmod(time*6.,1600)-200;
+    double t3 = std::fmod(time*7.,1600)-320;
 
     ignition::math::Pose3d pose(t3,0,sinf(t2)*1.f+3,0,0,1.57);
     //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
