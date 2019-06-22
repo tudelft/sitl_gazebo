@@ -79,16 +79,20 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 
     double t1 = time/60. + 5.;
     double t2 = time/3.;
-    double t3 = std::fmod(time*7.,1600)-320;
+    double t3 = std::fmod(time*3.,1600)-160;
 
-    ignition::math::Pose3d pose(t3,0,sinf(t2)*1.f+3,0,0,1.57);
+//    t3 = 0;
+
+//    if (time < 30)
+//        t3 = 500;
+
+    ignition::math::Pose3d pose(t3+cos(t2)*0.5,0+sinf(t2)*0.5,sinf(t2)*1.f+3,0,0,1.57);
     //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
     //    ignition::math::Pose3d pose(20,30,3.,0,0,0);
 
     //    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
 
     this->model->SetWorldPose(pose, true, true);
-
 }
 
 void MovingBeaconPlugin::Reset()

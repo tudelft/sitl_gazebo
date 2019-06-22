@@ -131,23 +131,22 @@ void RayPlugin::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 void RayPlugin::OnNewLaserScans()
 {
+
+    static double time = 0;
+    time += 0.002;
+    double t2 = time/3.;
+    float h_ship = sinf(t2)*1.f+3;
+
   lidar_message.set_time_msec(0);
   lidar_message.set_min_distance(min_distance_);
   lidar_message.set_max_distance(max_distance_);
 
-  double current_distance;
+  double current_distance = parentSensor_->Range(0) - h_ship;
 
-#if GAZEBO_MAJOR_VERSION >= 7
-  current_distance = parentSensor_->Range(0);
-#else
-  current_distance = parentSensor_->GetRange(0);
-#endif
-
-  // set distance to min/max if actual value is smaller/bigger
   if (current_distance < min_distance_ || std::isinf(current_distance)) {
-    current_distance = min_distance_;
+    current_distance = -1;
   } else if (current_distance > max_distance_) {
-    current_distance = max_distance_;
+    current_distance = (current_distance-5)*1.5 + 5;
   }
 
   lidar_message.set_current_distance(current_distance);

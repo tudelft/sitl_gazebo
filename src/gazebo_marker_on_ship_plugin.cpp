@@ -133,14 +133,6 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
     cv::Mat frame;
     cv::merge(bgr, 3, frame);
 
-    static int blind = 0;
-
-//    if (blind<20)
-//        frame = cv::Mat::zeros(frame.cols,frame.rows,CV_8UC3);
-//    blind++;
-//    if (blind>30)
-//        blind = 0;
-
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners;
 
