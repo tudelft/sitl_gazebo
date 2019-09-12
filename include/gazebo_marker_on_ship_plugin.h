@@ -82,6 +82,10 @@ private:
 	sensor_msgs::msgs::IRLock irlock_message;
 	std::string namespace_;
 
+
+    std::vector <cv::Point2f> mahist;
+
+
 	cv::Ptr<cv::aruco::Dictionary> dictionary;
 
 };

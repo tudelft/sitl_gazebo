@@ -197,6 +197,31 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
         float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
         float y = (p.y - CAM_CENTER_Y) * CAM_TAN_ANG_PER_PIXEL_Y;
+
+
+        //calc movvar guido:
+        mahist.push_back(cv::Point2f(x,y));
+
+        uint window_size = 30;
+        float m = 0;
+        if (mahist.size() > window_size) {
+            for (uint i=0; i<window_size; i++) {
+                uint ii = (i + window_size) % window_size;
+                m += sqrtf(powf(mahist.at(i).x,2) + powf(mahist.at(i).y,2)) * sqrtf(powf(mahist.at(ii).x,2) + powf(mahist.at(ii).y,2));
+            }
+        }
+
+        std::cout << "m: " << m << std::endl;
+        if (mahist.size() > window_size+1)
+            mahist.erase(mahist.begin());
+
+
+
+
+
+
+
+
         //        if (!(cnt % 50)) {
         //            printf("Angle coordinates beacon: %f, %f\n",x,y);
         //        }
@@ -209,7 +234,7 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         irlock_message.set_pos_x(x);
         irlock_message.set_pos_y(y);
         irlock_message.set_size_x(0); // unused by beacon estimator
-        irlock_message.set_size_y(0); // unused by beacon estimator
+        irlock_message.set_size_y(m); // unused by beacon estimator
 
         irlock_pub_->Publish(irlock_message);
 
