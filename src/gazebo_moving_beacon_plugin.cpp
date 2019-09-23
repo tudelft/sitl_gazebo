@@ -86,11 +86,17 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 //    if (time < 30)
 //        t3 = 500;
 
-    ignition::math::Pose3d pose(-38,-28,3,0,sinf(time)/8.,1.57);
+    float roll = sinf(time*2)/6.;
+
+//    if (time < 60)
+//        roll = 0;
+
+    ignition::math::Pose3d pose(-38,-28,3,0,roll,1.57);
+//    ignition::math::Pose3d pose(-100,-28,3,0,sinf(time)/8.,1.57);
 
     //    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
 
-    this->model->SetWorldPose(pose, true, true);
+    this->model->SetWorldPose(pose, true,true);
 }
 
 void MovingBeaconPlugin::Reset()
