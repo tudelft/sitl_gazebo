@@ -86,9 +86,7 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 //    if (time < 30)
 //        t3 = 500;
 
-    ignition::math::Pose3d pose(t3+cos(t2)*0.5,0+sinf(t2)*0.5,sinf(t2)*1.f+3,0,0,1.57);
-    //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
-    //    ignition::math::Pose3d pose(20,30,3.,0,0,0);
+    ignition::math::Pose3d pose(-38,-28,3,0,sinf(time)/8.,1.57);
 
     //    printf("Time: %f. Pose: %f, %f, %f\n", time, pose.Pos().X(), pose.Pos().Y(),pose.Pos().Z());
 

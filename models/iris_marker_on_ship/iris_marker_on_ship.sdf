@@ -36,17 +36,5 @@
         </limit>
       </axis>
     </joint>
-    <plugin name='wind_plugin' filename='libgazebo_wind_plugin.so'>
-      <frameId>iris::base_link</frameId>
-      <linkName>iris::base_link</linkName>
-      <robotNamespace/>
-      <xyzOffset>1 0 0</xyzOffset>
-      <windDirection>0 1 0</windDirection>
-      <windForceMean>2</windForceMean>
-      <windGustDirection>1 0 0</windGustDirection>
-      <windGustDuration>0</windGustDuration>
-      <windGustStart>60</windGustStart>
-      <windGustForceMean>0</windGustForceMean>
-    </plugin>
   </model>
 </sdf>
