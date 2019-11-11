@@ -192,9 +192,6 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     if (found)
     {
-//        std::cout  << p << std::endl;
-        //marker_angle = transformPixelToTanAngle_rgb(p*resizef);
-
         float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
         float y = (p.y - CAM_CENTER_Y) * CAM_TAN_ANG_PER_PIXEL_Y;
 
@@ -203,43 +200,40 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         mahist.push_back(cv::Point2f(x,y));
 
         uint window_size = 30;
-        float m = 0;
+        double mx = 0,my=0;
         if (mahist.size() > window_size) {
             for (uint i=0; i<window_size; i++) {
-                uint ii = (i + window_size) % window_size;
-                m += sqrtf(powf(mahist.at(i).x,2) + powf(mahist.at(i).y,2)) * sqrtf(powf(mahist.at(ii).x,2) + powf(mahist.at(ii).y,2));
+                uint ii = (i + window_size-1) % window_size; //TODO: FIXED BUG HERE CHECK IN OBC_VISION!!!
+                //std::cout << "ii " << ii << " i " << i << std::endl;
+                mx += sqrtf(powf(mahist.at(i).x - mahist.at(ii).x,2));
+                my += sqrtf(powf(mahist.at(i).y - mahist.at(ii).y,2));
             }
         }
+        //std::cout << "movvar x: " << mx << "  y: " << my << std::endl;
 
-        std::cout << "m: " << m << std::endl;
         if (mahist.size() > window_size+1)
             mahist.erase(mahist.begin());
 
-
-
-
-
-
-
-
-        //        if (!(cnt % 50)) {
-        //            printf("Angle coordinates beacon: %f, %f\n",x,y);
-        //        }
-
-        //        printf("%f, %f\n",static_cast<float>(x),static_cast<float>(y));
 
         // prepare irlock message
         irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
         irlock_message.set_signature(0); // unused by beacon estimator
         irlock_message.set_pos_x(x);
         irlock_message.set_pos_y(y);
-        irlock_message.set_size_x(0); // unused by beacon estimator
-        irlock_message.set_size_y(m); // unused by beacon estimator
+        irlock_message.set_size_x(mx);
+        irlock_message.set_size_y(my);
 
         irlock_pub_->Publish(irlock_message);
 
+    } else { //TODO: add below to obc_vision!!!
+        irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
+        irlock_message.set_signature(0); // unused by beacon estimator
+        irlock_message.set_pos_x(0);
+        irlock_message.set_pos_y(0);
+        irlock_message.set_size_x(-1);
+        irlock_message.set_size_y(-1);
+        irlock_pub_->Publish(irlock_message);
     }
-//        std::cout  << "-" << std::endl;
     if (!(cnt % 3)) {
         cv::Mat fs;
         cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
