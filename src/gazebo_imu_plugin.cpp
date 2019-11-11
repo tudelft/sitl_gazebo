@@ -250,6 +250,8 @@ void GazeboImuPlugin::OnUpdate(const common::UpdateInfo& _info) {
   double dt = (current_time - last_time_).Double();
   last_time_ = current_time;
   double t = current_time.Double();
+  if (dt<0.001)
+    dt = 0.002;
 
 #if GAZEBO_MAJOR_VERSION >= 9
   ignition::math::Pose3d T_W_I = link_->WorldPose(); //TODO(burrimi): Check tf.

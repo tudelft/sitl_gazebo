@@ -37,7 +37,7 @@ private:
 	event::ConnectionPtr updateConnection_model;
 	transport::PublisherPtr irlock_pub_;
 	transport::NodePtr node_handle_;
-
+	physics::WorldPtr world_;
 
 	std::string namespace_;
 

@@ -128,6 +128,8 @@ void VisionPlugin::OnUpdate(const common::UpdateInfo&)
   common::Time current_time = _world->GetSimTime();
 #endif
   double dt = (current_time - _last_pub_time).Double();
+  if (dt < 0)
+      dt = 0.002;
 
   if (dt > 1.0 / _pub_rate) {
 

@@ -56,6 +56,9 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
         gzerr << "MovingBeaconPlugin requires a MovingBeacon.\n";
     }
 
+    world_ = model->GetWorld();
+
+
     if (_sdf->HasElement("robotNamespace")) {
         namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
     } else {
@@ -69,24 +72,31 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
     this->updateConnection_model = (event::Events::ConnectWorldUpdateBegin(
                                         std::bind(&MovingBeaconPlugin::OnUpdated, this, std::placeholders::_1)));
 
+    ignition::math::Pose3d pose(-110,0,0,0,0,1.57);
+    this->model->SetWorldPose(pose, true, true);
+
 
 }
 
 void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
 {
-    static double time = 0;
-    time += 0.002;
 
+    common::Time current_time  = world_->SimTime();
+    double time = current_time.Double();
+
+    auto current_pose = this->model->WorldPose();
     double t1 = time/60. + 5.;
     double t2 = time/3.;
-    double t3 = std::fmod(time*3.,1600)-160;
+    double t3 = current_pose.Pos().X()+0.006;
+
+
 
 //    t3 = 0;
 
 //    if (time < 30)
 //        t3 = 500;
 
-    ignition::math::Pose3d pose(t3+cos(t2)*0.5,0+sinf(t2)*0.5,sinf(t2)*1.f+3,0,0,1.57);
+    ignition::math::Pose3d pose(t3,0+sinf(t2)*0.5,sinf(t2)*1.f+3,0,0,1.57);
     //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
     //    ignition::math::Pose3d pose(20,30,3.,0,0,0);
 
