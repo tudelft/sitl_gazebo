@@ -61,6 +61,7 @@
 #include <Range.pb.h>
 #include <SITLGps.pb.h>
 #include <IRLock.pb.h>
+#include <MovingMarker.pb.h>
 #include <Groundtruth.pb.h>
 #include <Odometry.pb.h>
 
@@ -87,6 +88,7 @@ typedef const boost::shared_ptr<const nav_msgs::msgs::Odometry> OdomPtr;
 typedef const boost::shared_ptr<const sensor_msgs::msgs::Groundtruth> GtPtr;
 typedef const boost::shared_ptr<const sensor_msgs::msgs::Imu> ImuPtr;
 typedef const boost::shared_ptr<const sensor_msgs::msgs::IRLock> IRLockPtr;
+typedef const boost::shared_ptr<const sensor_msgs::msgs::MovingMarker> MovingMarkerPtr;
 typedef const boost::shared_ptr<const sensor_msgs::msgs::OpticalFlow> OpticalFlowPtr;
 typedef const boost::shared_ptr<const sensor_msgs::msgs::Range> SonarPtr;
 typedef const boost::shared_ptr<const sensor_msgs::msgs::Range> LidarPtr;
@@ -104,6 +106,7 @@ static const std::string kDefaultLidarTopic = "/link/lidar";
 static const std::string kDefaultOpticalFlowTopic = "/px4flow/link/opticalFlow";
 static const std::string kDefaultSonarTopic = "/sonar_model/link/sonar";
 static const std::string kDefaultIRLockTopic = "/camera/link/irlock";
+static const std::string kDefaultMovingMarkerTopic = "/camera/link/moving_marker";
 static const std::string kDefaultGPSTopic = "/gps";
 static const std::string kDefaultVisionTopic = "/vision_odom";
 
@@ -133,6 +136,7 @@ public:
     lidar_sub_topic_(kDefaultLidarTopic),
     sonar_sub_topic_(kDefaultSonarTopic),
     irlock_sub_topic_(kDefaultIRLockTopic),
+    moving_marker_sub_topic_(kDefaultMovingMarkerTopic),
     gps_sub_topic_(kDefaultGPSTopic),
     vision_sub_topic_(kDefaultVisionTopic),
     model_ {},
@@ -227,6 +231,7 @@ private:
   void SonarCallback(SonarPtr& sonar_msg);
   void OpticalFlowCallback(OpticalFlowPtr& opticalFlow_msg);
   void IRLockCallback(IRLockPtr& irlock_msg);
+  void MovingMarkerCallback(MovingMarkerPtr& irlock_msg);
   void VisionCallback(OdomPtr& odom_msg);
   void send_mavlink_message(const mavlink_message_t *message, const int destination_port = 0);
   void handle_message(mavlink_message_t *msg);
@@ -261,6 +266,7 @@ private:
   transport::SubscriberPtr sonar_sub_;
   transport::SubscriberPtr opticalFlow_sub_;
   transport::SubscriberPtr irlock_sub_;
+  transport::SubscriberPtr moving_marker_sub_;
   transport::SubscriberPtr gps_sub_;
   transport::SubscriberPtr groundtruth_sub_;
   transport::SubscriberPtr vision_sub_;
@@ -270,6 +276,7 @@ private:
   std::string opticalFlow_sub_topic_;
   std::string sonar_sub_topic_;
   std::string irlock_sub_topic_;
+  std::string moving_marker_sub_topic_;
   std::string gps_sub_topic_;
   std::string groundtruth_sub_topic_;
   std::string vision_sub_topic_;

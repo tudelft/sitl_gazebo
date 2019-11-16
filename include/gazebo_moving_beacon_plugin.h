@@ -11,7 +11,7 @@
 #include "gazebo/msgs/msgs.hh"
 #include "gazebo/physics/physics.hh"
 
-#include "IRLock.pb.h"
+#include "MovingMarker.pb.h"
 
 #include <iostream>
 
@@ -35,7 +35,7 @@ protected:
 private:
 	event::ConnectionPtr updateConnection;
 	event::ConnectionPtr updateConnection_model;
-	transport::PublisherPtr irlock_pub_;
+	transport::PublisherPtr movingmarker_pub_;
 	transport::NodePtr node_handle_;
 	physics::WorldPtr world_;
 

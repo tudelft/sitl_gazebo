@@ -77,10 +77,10 @@ void MarkerOnShipPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
 
     const string scopedName = _sensor->ParentName();
 
-    string topicName = "~/" + scopedName + "/irlock";
+    string topicName = "~/" + scopedName + "/moving_marker";
     boost::replace_all(topicName, "::", "/");
 
-    irlock_pub_ = node_handle_->Advertise<sensor_msgs::msgs::IRLock>(topicName, 10);
+    moving_marker_pub_ = node_handle_->Advertise<sensor_msgs::msgs::MovingMarker>(topicName, 10);
 
     this->camera->SetActive(true);
     this->rcamera = this->camera->Camera();
@@ -111,10 +111,107 @@ cv::Point2f getCenterOfMarker(std::vector<std::vector<cv::Point2f>> corners){
     p.y /= static_cast<float>(cnt);
     return p;
 }
+std::tuple<float,float> getDistanceAndSizeFrom2Markers(std::vector<cv::Point2f> corners1,std::vector<cv::Point2f> corners2, float distane_between_markers_mm, float f, float fx, float fy){
+    cv::Point2f p1 = getCenterOfMarker({corners1});
+    cv::Point2f p2 = getCenterOfMarker({corners2});
+    float size = static_cast<float>(cv::norm(p1-p2));
+    cv::Point2f p(p1.x-p2.x, p1.y-p2.y);
+    float dist_px = sqrtf(p.x*p.x+p.y*p.y);
+
+    float mx = fx / f; // px/mm
+    float my = fy / f;
+    float m = (mx+my)*0.5f;
+
+    float object_image_sensor_mm = dist_px / m;
+    float distance_x_mm = (distane_between_markers_mm * f) / (object_image_sensor_mm);
+
+    return std::make_tuple( distance_x_mm/1000.f,size);
+}
+
+std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector<cv::Point2f>> corners){
+    float fx,fy,f;
+    fx = 0.01;
+    fy = 0.01;
+    f = 1.143;
+
+    int cnt = 0;
+    float d = 0;
+    float size = 0;
+    if (markers[1] > 0 && markers[3] > 0 ){
+        float part_dist, part_size;
+        std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[1]),corners.at(markers[3]),1850,f,fx, fy);
+        d+=part_dist;
+        size+=part_size;
+        cnt++;
+    }
+    if (markers[0] > 0 && markers[4] > 0 ){
+        float part_dist, part_size;
+        std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[0]),corners.at(markers[4]),1850,f,fx, fy);
+        d+=part_dist;
+        size+=part_size;
+        cnt++;
+    }
+    if (cnt == 0){ // only use the smaller markers if the big ones weren't seen
+        if (markers[10] > 0 && markers[12] > 0 ){
+            float part_dist, part_size;
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[10]),corners.at(markers[12]),540,f,fx, fy);
+            d+=part_dist;
+            size+=part_size;
+            cnt++;
+        }
+        if (markers[13] > 0 && markers[15] > 0 ){
+            float part_dist, part_size;
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[13]),corners.at(markers[15]),540,f,fx, fy);
+            d+=part_dist;
+            size+=part_size;
+            cnt++;
+        }
+        if (markers[16] > 0 && markers[18] > 0 ){
+            float part_dist, part_size;
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[16]),corners.at(markers[18]),540,f,fx, fy);
+            d+=part_dist;
+            size+=part_size;
+            cnt++;
+        }
+
+        if (markers[10] > 0 && markers[16] > 0 ){
+            float part_dist, part_size;
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[10]),corners.at(markers[16]),540,f,fx, fy);
+            d+=part_dist;
+            size+=part_size;
+            cnt++;
+        }
+        if (markers[11] > 0 && markers[17] > 0 ){
+            float part_dist, part_size;
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[11]),corners.at(markers[17]),540,f,fx, fy);
+            d+=part_dist;
+            size+=part_size;
+            cnt++;
+        }
+        if (markers[12] > 0 && markers[18] > 0 ){
+            float part_dist, part_size;
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[12]),corners.at(markers[18]),540,f,fx, fy);
+            d+=part_dist;
+            size+=part_size;
+            cnt++;
+        }
+    }
+    float marker_size,marker_distance ;
+    if (cnt > 0) {
+        marker_distance = d / cnt;
+        marker_size = size / cnt;
+    } else {
+        marker_distance = -1;
+        marker_size = -1;
+    }
+    return std::make_tuple(marker_size,marker_distance);
+}
+
+
 
 void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
                                     unsigned int width, unsigned int height,
-                                    unsigned int depth, const std::string &format)
+                                    unsigned int depth [[maybe_unused]], const std::string &format [[maybe_unused]])
 {
 
     static int cnt = 0;
@@ -147,14 +244,8 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
             markers[ids.at(i)] = i;
     }
 
-    //            std::cout  << getCenterOfMarker({corners.at(markers[10]),corners.at(markers[18])}) << std::endl;
-    //            std::cout  << getCenterOfMarker({corners.at(markers[12]),corners.at(markers[16])}) << std::endl;
-    //            std::cout  << getCenterOfMarker({corners.at(markers[11]),corners.at(markers[17])}) << std::endl;
-    //            std::cout  << getCenterOfMarker({corners.at(markers[13]),corners.at(markers[15])}) << std::endl;
-    //            std::cout  << getCenterOfMarker({corners.at(markers[1]),corners.at(markers[3])}) << std::endl;
-    //            std::cout  << getCenterOfMarker({corners.at(markers[0]),corners.at(markers[4])}) << std::endl;
-
-    //            std::cout  << getCenterOfMarker({corners.at(markers[14])}) << std::endl;
+    float marker_size,marker_distance;
+    std::tie(marker_size,marker_distance) =  update_distance(markers,corners);
 
     cv::Point2f p = {0};
     bool found = false;
@@ -215,24 +306,25 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
             mahist.erase(mahist.begin());
 
 
-        // prepare irlock message
-        irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
-        irlock_message.set_signature(0); // unused by beacon estimator
-        irlock_message.set_pos_x(x);
-        irlock_message.set_pos_y(y);
-        irlock_message.set_size_x(mx);
-        irlock_message.set_size_y(my);
-
-        irlock_pub_->Publish(irlock_message);
+        // prepare message
+        moving_marker_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
+        moving_marker_message.set_size(marker_size);
+        moving_marker_message.set_distance(marker_distance);
+        moving_marker_message.set_angle_x(x);
+        moving_marker_message.set_angle_y(y);
+        moving_marker_message.set_movvar_x(mx);
+        moving_marker_message.set_movvar_y(my);
+        moving_marker_pub_->Publish(moving_marker_message);
 
     } else { //TODO: add below to obc_vision!!!
-        irlock_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
-        irlock_message.set_signature(0); // unused by beacon estimator
-        irlock_message.set_pos_x(0);
-        irlock_message.set_pos_y(0);
-        irlock_message.set_size_x(-1);
-        irlock_message.set_size_y(-1);
-        irlock_pub_->Publish(irlock_message);
+        moving_marker_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
+        moving_marker_message.set_size(-1);
+        moving_marker_message.set_distance(-1);
+        moving_marker_message.set_angle_x(0);
+        moving_marker_message.set_angle_y(0);
+        moving_marker_message.set_movvar_x(-1);
+        moving_marker_message.set_movvar_y(-1);
+        moving_marker_pub_->Publish(moving_marker_message);
     }
     if (!(cnt % 3)) {
         cv::Mat fs;

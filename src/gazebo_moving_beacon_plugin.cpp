@@ -78,7 +78,7 @@ void MovingBeaconPlugin::Load(physics::ModelPtr _model,sdf::ElementPtr _sdf)
 
 }
 
-void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
+void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info [[maybe_unused]])
 {
 
     common::Time current_time  = world_->SimTime();
@@ -88,13 +88,6 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info)
     double t1 = time/60. + 5.;
     double t2 = time/3.;
     double t3 = current_pose.Pos().X()+0.006;
-
-
-
-//    t3 = 0;
-
-//    if (time < 30)
-//        t3 = 500;
 
     ignition::math::Pose3d pose(t3,0+sinf(t2)*0.5,sinf(t2)*1.f+3,0,0,1.57);
     //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);

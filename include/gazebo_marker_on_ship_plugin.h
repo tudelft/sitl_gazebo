@@ -15,7 +15,7 @@
 #include "gazebo/rendering/Camera.hh"
 
 
-#include "IRLock.pb.h"
+#include "MovingMarker.pb.h"
 
 #include <iostream>
 
@@ -77,15 +77,13 @@ protected:
 
 private:
 	event::ConnectionPtr newFrameConnection;
-	transport::PublisherPtr irlock_pub_;
+	transport::PublisherPtr moving_marker_pub_;
 	transport::NodePtr node_handle_;
-	sensor_msgs::msgs::IRLock irlock_message;
+	sensor_msgs::msgs::MovingMarker moving_marker_message;
 	std::string namespace_;
 
 
-    std::vector <cv::Point2f> mahist;
-
-
+	std::vector <cv::Point2f> mahist;
 	cv::Ptr<cv::aruco::Dictionary> dictionary;
 
 };

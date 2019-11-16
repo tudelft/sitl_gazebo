@@ -245,6 +245,7 @@ set(std_msgs msgs/Int32.proto)
 set(sensor_msgs
   msgs/Imu.proto
   msgs/IRLock.proto
+  msgs/MovingMarker.proto
   msgs/Float.proto
   msgs/Groundtruth.proto
   msgs/Range.proto

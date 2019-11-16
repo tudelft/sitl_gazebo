@@ -1,0 +1,13 @@
+syntax = "proto2";
+package sensor_msgs.msgs;
+
+message MovingMarker
+{
+  required float time_usec	= 1;
+  required float angle_x	= 2;
+  required float angle_y	= 3;
+  required float movvar_x	= 4;
+  required float movvar_y	= 5;
+  required float size		= 6;
+  required float distance	= 7;
+}

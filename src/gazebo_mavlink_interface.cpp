@@ -64,6 +64,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
       opticalFlow_sub_topic_, opticalFlow_sub_topic_);
   getSdfParam<std::string>(_sdf, "sonarSubTopic", sonar_sub_topic_, sonar_sub_topic_);
   getSdfParam<std::string>(_sdf, "irlockSubTopic", irlock_sub_topic_, irlock_sub_topic_);
+  getSdfParam<std::string>(_sdf, "movingmarkerSubTopic", moving_marker_sub_topic_, moving_marker_sub_topic_);
   groundtruth_sub_topic_ = "/groundtruth";
 
   // set input_reference_ from inputs.control
@@ -192,6 +193,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   opticalFlow_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + opticalFlow_sub_topic_, &GazeboMavlinkInterface::OpticalFlowCallback, this);
   sonar_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + sonar_sub_topic_, &GazeboMavlinkInterface::SonarCallback, this);
   irlock_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + irlock_sub_topic_, &GazeboMavlinkInterface::IRLockCallback, this);
+  moving_marker_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + moving_marker_sub_topic_, &GazeboMavlinkInterface::MovingMarkerCallback, this);
   gps_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + gps_sub_topic_, &GazeboMavlinkInterface::GpsCallback, this);
   groundtruth_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + groundtruth_sub_topic_, &GazeboMavlinkInterface::GroundtruthCallback, this);
   vision_sub_ = node_handle_->Subscribe("~/" + model_->GetName() + vision_sub_topic_, &GazeboMavlinkInterface::VisionCallback, this);
@@ -758,6 +760,29 @@ void GazeboMavlinkInterface::IRLockCallback(IRLockPtr& irlock_message) {
   sensor_msg.size_y = irlock_message->size_y();
   sensor_msg.position_valid = false;
   sensor_msg.type = LANDING_TARGET_TYPE_LIGHT_BEACON;
+
+  mavlink_message_t msg;
+  mavlink_msg_landing_target_encode_chan(1, 200, MAVLINK_COMM_0, &msg, &sensor_msg);
+  send_mavlink_message(&msg);
+}
+
+void GazeboMavlinkInterface::MovingMarkerCallback(MovingMarkerPtr& moving_marker_message) {
+  mavlink_landing_target_t sensor_msg;
+
+#if GAZEBO_MAJOR_VERSION >= 9
+  sensor_msg.time_usec = world_->SimTime().Double() * 1e6;
+#else
+  sensor_msg.time_usec = world_->GetSimTime().Double() * 1e6;
+#endif
+  sensor_msg.angle_x = moving_marker_message->angle_x();
+  sensor_msg.angle_y = moving_marker_message->angle_y();
+  sensor_msg.x = moving_marker_message->movvar_x();
+  sensor_msg.y = moving_marker_message->movvar_y();
+  sensor_msg.size_x = moving_marker_message->size();
+  sensor_msg.size_y = moving_marker_message->size();
+  sensor_msg.distance = moving_marker_message->distance();
+  sensor_msg.position_valid = false;
+  sensor_msg.type = LANDING_TARGET_TYPE_VISION_FIDUCIAL;
 
   mavlink_message_t msg;
   mavlink_msg_landing_target_encode_chan(1, 200, MAVLINK_COMM_0, &msg, &sensor_msg);
