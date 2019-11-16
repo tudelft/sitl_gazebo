@@ -288,8 +288,8 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
 
     if (found)
     {
-        float x = (p.x - CAM_CENTER_X) * CAM_TAN_ANG_PER_PIXEL_X;
-        float y = (p.y - CAM_CENTER_Y) * CAM_TAN_ANG_PER_PIXEL_Y;
+        float x = (p.x - CAM_CENTER_X) * CAM_PX_2_RAD_X; //TODO: implement also in obc_vision!
+        float y = -(p.y - CAM_CENTER_Y) * CAM_PX_2_RAD_Y;
 
 
         //calc movvar guido:

@@ -45,8 +45,13 @@
 #define CAM_RES_Y 480
 #define CAM_FOV_X 91.2f
 #define CAM_FOV_Y 65.5f
-#define CAM_TAN_HALF_FOV_X 0.69243282809f // tan(0.5 * 69.4 * pi/180)
-#define CAM_TAN_HALF_FOV_Y 0.38887873185f // tan(0.5 * 42.5 * pi/180)
+#define CAM_TAN_HALF_FOV_X 1.02116637855f // tan(0.5 * 69.4 * pi/180)
+#define CAM_TAN_HALF_FOV_Y 0.64322161401f // tan(0.5 * 42.5 * pi/180)
+
+#define CAM_PX_2_DEG_X (CAM_FOV_X/CAM_RES_X)
+#define CAM_PX_2_DEG_Y (CAM_FOV_Y/CAM_RES_Y)
+#define CAM_PX_2_RAD_X ((CAM_FOV_X/180.f*M_PIf32)/CAM_RES_X)
+#define CAM_PX_2_RAD_Y ((CAM_FOV_Y/180.f*M_PIf32)/CAM_RES_X)
 
 
 #define CAM_CENTER_X				(CAM_RES_X/2)			// the x-axis center pixel position

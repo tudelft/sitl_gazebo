@@ -28,7 +28,7 @@
         <visualize>true</visualize>
         <topic>/downward_cam</topic>
         <camera>
-          <horizontal_fov>1.143</horizontal_fov> <!-- 35 deg -->
+          <horizontal_fov>1.59</horizontal_fov> <!-- 91.2 deg -->
           <aspect_ratio>1.39</aspect_ratio>
  
           <image>
