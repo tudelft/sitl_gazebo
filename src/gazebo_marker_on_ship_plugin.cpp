@@ -134,19 +134,24 @@ std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector
     fy = 0.01;
     f = 1.143;
 
+    const uint marker_interdist_big = 1850;
+    const uint marker_interdist_small = 540;
+    const float marker_interdist_small2big = static_cast<float>(marker_interdist_big) / static_cast<float>(marker_interdist_small);
+
+
     int cnt = 0;
     float d = 0;
     float size = 0;
     if (markers[1] > 0 && markers[3] > 0 ){
         float part_dist, part_size;
-        std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[1]),corners.at(markers[3]),1850,f,fx, fy);
+        std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[1]),corners.at(markers[3]),marker_interdist_big,f,fx, fy);
         d+=part_dist;
         size+=part_size;
         cnt++;
     }
     if (markers[0] > 0 && markers[4] > 0 ){
         float part_dist, part_size;
-        std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[0]),corners.at(markers[4]),1850,f,fx, fy);
+        std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[0]),corners.at(markers[4]),marker_interdist_big,f,fx, fy);
         d+=part_dist;
         size+=part_size;
         cnt++;
@@ -154,45 +159,45 @@ std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector
     if (cnt == 0){ // only use the smaller markers if the big ones weren't seen
         if (markers[10] > 0 && markers[12] > 0 ){
             float part_dist, part_size;
-            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[10]),corners.at(markers[12]),540,f,fx, fy);
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[10]),corners.at(markers[12]),marker_interdist_small,f,fx, fy);
             d+=part_dist;
-            size+=part_size;
+            size+=part_size*marker_interdist_small2big;
             cnt++;
         }
         if (markers[13] > 0 && markers[15] > 0 ){
             float part_dist, part_size;
-            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[13]),corners.at(markers[15]),540,f,fx, fy);
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[13]),corners.at(markers[15]),marker_interdist_small,f,fx, fy);
             d+=part_dist;
-            size+=part_size;
+            size+=part_size*marker_interdist_small2big;
             cnt++;
         }
         if (markers[16] > 0 && markers[18] > 0 ){
             float part_dist, part_size;
-            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[16]),corners.at(markers[18]),540,f,fx, fy);
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[16]),corners.at(markers[18]),marker_interdist_small,f,fx, fy);
             d+=part_dist;
-            size+=part_size;
+            size+=part_size*marker_interdist_small2big;
             cnt++;
         }
 
         if (markers[10] > 0 && markers[16] > 0 ){
             float part_dist, part_size;
-            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[10]),corners.at(markers[16]),540,f,fx, fy);
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[10]),corners.at(markers[16]),marker_interdist_small,f,fx, fy);
             d+=part_dist;
-            size+=part_size;
+            size+=part_size*marker_interdist_small2big;
             cnt++;
         }
         if (markers[11] > 0 && markers[17] > 0 ){
             float part_dist, part_size;
-            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[11]),corners.at(markers[17]),540,f,fx, fy);
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[11]),corners.at(markers[17]),marker_interdist_small,f,fx, fy);
             d+=part_dist;
-            size+=part_size;
+            size+=part_size*marker_interdist_small2big;
             cnt++;
         }
         if (markers[12] > 0 && markers[18] > 0 ){
             float part_dist, part_size;
-            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[12]),corners.at(markers[18]),540,f,fx, fy);
+            std::tie(part_dist, part_size) = getDistanceAndSizeFrom2Markers(corners.at(markers[12]),corners.at(markers[18]),marker_interdist_small,f,fx, fy);
             d+=part_dist;
-            size+=part_size;
+            size+=part_size*marker_interdist_small2big;
             cnt++;
         }
     }
@@ -294,8 +299,7 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         double mx = 0,my=0;
         if (mahist.size() > window_size) {
             for (uint i=0; i<window_size; i++) {
-                uint ii = (i + window_size-1) % window_size; //TODO: FIXED BUG HERE CHECK IN OBC_VISION!!!
-                //std::cout << "ii " << ii << " i " << i << std::endl;
+                uint ii = (i + window_size-1) % window_size;
                 mx += sqrtf(powf(mahist.at(i).x - mahist.at(ii).x,2));
                 my += sqrtf(powf(mahist.at(i).y - mahist.at(ii).y,2));
             }
@@ -316,7 +320,7 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         moving_marker_message.set_movvar_y(my);
         moving_marker_pub_->Publish(moving_marker_message);
 
-    } else { //TODO: add below to obc_vision!!!
+    } else {
         moving_marker_message.set_time_usec(0); // will be filled in simulator_mavlink.cpp
         moving_marker_message.set_size(-1);
         moving_marker_message.set_distance(-1);
