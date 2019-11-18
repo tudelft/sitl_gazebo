@@ -291,6 +291,14 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
         found = true;
     }
 
+    if (!found && corners.size()>0) { //todo: implement in obc_vision
+        uint8_t cnt = 0;
+        for (auto m : corners) {
+            p += getCenterOfMarker({m});
+        }
+        p/=static_cast<float>(cnt);
+        found=true;
+    }
 
     float x,y;
     if (found)
