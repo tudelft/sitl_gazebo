@@ -213,6 +213,13 @@ std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector
 }
 
 
+std::string to_string_with_precision(float f, const int n)
+{
+    std::ostringstream out;
+
+    out << std::fixed << std::setprecision(n) << f;
+    return out.str();
+}
 
 void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
                                     unsigned int width, unsigned int height,
@@ -333,6 +340,12 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
     if (!(cnt % 3)) {
         cv::Mat fs;
         cv::resize(frame,fs,cv::Size(frame.cols/2,frame.rows/2));
+        if (found) {
+            putText(fs, to_string_with_precision(x, 2) + ", " + to_string_with_precision(y, 2), cv::Point2i(0, 12), cv::FONT_HERSHEY_SIMPLEX,0.5, cv::Scalar(0, 10, 255),1);
+            putText(fs, to_string_with_precision(marker_size,0) , cv::Point2i(0, 26), cv::FONT_HERSHEY_SIMPLEX,0.5, cv::Scalar(0, 10, 255),1);
+            cv::Point p_mid(fs.cols/2,fs.rows/2);
+            cv::line(fs,p_mid,p_mid,cv::Scalar(0,0,255),2);
+        }
         cv::imwrite("testlalala.png",fs);
     }
 }
