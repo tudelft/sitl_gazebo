@@ -85,11 +85,10 @@ void MovingBeaconPlugin::OnUpdated(const common::UpdateInfo &_info [[maybe_unuse
     double time = current_time.Double();
 
     auto current_pose = this->model->WorldPose();
-    double t1 = time/60. + 5.;
-    double t2 = time/3.;
-    double t3 = current_pose.Pos().X()+0.006;
+    double t = time/3.;
+    double posX = current_pose.Pos().X()+0.006;
 
-    ignition::math::Pose3d pose(t3,0+sinf(t2)*0.5,sinf(t2)*1.f+3,0,0,1.57);
+    ignition::math::Pose3d pose(posX,0+sinf(t)*0.5,sinf(t)*1.f+3,0,0,1.57);
     //    ignition::math::Pose3d pose(sin(t1)*80.,cos(t1)*80.-80.,sinf(t2)*1.f+3,0,0,-t1+M_PI/2.);
     //    ignition::math::Pose3d pose(20,30,3.,0,0,0);
 
