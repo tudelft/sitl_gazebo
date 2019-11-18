@@ -213,6 +213,13 @@ std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector
 }
 
 
+std::string to_string_with_precision(float f, const int n)
+{
+    std::ostringstream out;
+
+    out << std::fixed << std::setprecision(n) << f;
+    return out.str();
+}
 
 void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
                                     unsigned int width, unsigned int height,
