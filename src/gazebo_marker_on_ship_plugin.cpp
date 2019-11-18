@@ -213,13 +213,6 @@ std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector
 }
 
 
-std::string to_string_with_precision(float f, const int n)
-{
-    std::ostringstream out;
-
-    out << std::fixed << std::setprecision(n) << f;
-    return out.str();
-}
 
 void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
                                     unsigned int width, unsigned int height,
@@ -292,11 +285,11 @@ void MarkerOnShipPlugin::OnNewFrame(const unsigned char *image,
     }
 
 
-
+    float x,y;
     if (found)
     {
-        float x = (p.x - CAM_CENTER_X) * CAM_PX_2_RAD_X; //TODO: implement also in obc_vision!
-        float y = -(p.y - CAM_CENTER_Y) * CAM_PX_2_RAD_Y;
+        x = (p.x - CAM_CENTER_X) * CAM_PX_2_RAD_X; //TODO: implement also in obc_vision!
+        y = -(p.y - CAM_CENTER_Y) * CAM_PX_2_RAD_Y;
 
 
         //calc movvar guido:
