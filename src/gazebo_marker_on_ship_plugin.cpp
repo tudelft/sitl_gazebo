@@ -130,9 +130,9 @@ std::tuple<float,float> getDistanceAndSizeFrom2Markers(std::vector<cv::Point2f> 
 
 std::tuple<float,float> update_distance(int markers[20], std::vector<std::vector<cv::Point2f>> corners){
     float fx,fy,f;
-    fx = 0.01;
-    fy = 0.01;
-    f = 1.143;
+    f = 1.143f;
+    fx = 17746.36f;
+    fy = fx/f;
 
     const uint marker_interdist_big = 1850;
     const uint marker_interdist_small = 540;
